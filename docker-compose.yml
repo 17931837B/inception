@@ -1,0 +1,12 @@
+services:
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    expose:
+      - 3306
+    env_file:
+      - .env
+    volumes:
+      - mariadb:/test
+    networks:
+      - inception
