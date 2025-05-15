@@ -7,6 +7,6 @@ services:
     env_file:
       - .env
     volumes:
-      - mariadb:/test
+      - mariadb:/var/list/mysql
     networks:
       - inception
