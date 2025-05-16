@@ -1,5 +1,6 @@
 services:
   mariadb:
+    build: ./mariadb
     image: mariadb
     container_name: mariadb
     expose:
@@ -10,3 +11,7 @@ services:
       - mariadb:/var/list/mysql
     networks:
       - inception
+#   wordpress:
+#     image: wordpress
+#     container_name: wordpress
+#     build: ./requirements/wordpress
