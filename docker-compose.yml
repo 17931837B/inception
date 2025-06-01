@@ -4,13 +4,14 @@ services:
     image: mariadb
     container_name: mariadb
     expose:
-      - 3306
+      - "3306"
     env_file:
       - .env
     volumes:
       - mariadb:/var/list/mysql
     networks:
       - inception
+    restart: on-failure
 #   wordpress:
 #     image: wordpress
 #     container_name: wordpress
