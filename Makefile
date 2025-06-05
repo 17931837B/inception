@@ -1,5 +1,5 @@
 D_C=docker compose
-D_C_FILE = ./srcs/docker-compose.yml
+D_C_FILE = ./docker-compose.yml
 
 all: up
 

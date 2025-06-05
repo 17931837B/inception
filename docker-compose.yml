@@ -15,7 +15,7 @@ services:
   wordpress:
     image: wordpress
     container_name: wordpress
-    build: ./requirements/wordpress
+    build: ./wordpress
     expose:
       - 9000
     env_file:
@@ -23,13 +23,13 @@ services:
     volumes:
       - wordpress:/var/www/html
     depends_on:
-      -mariadb
+      - mariadb
     networks:
      - inception
   nginx:
     image: nginx
     container_name: nginx
-    build: ./requirements/nginx
+    build: ./nginx
     ports:
       - "443:443"
     env_file:
