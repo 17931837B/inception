@@ -12,7 +12,48 @@ services:
     networks:
       - inception
     restart: on-failure
-#   wordpress:
-#     image: wordpress
-#     container_name: wordpress
-#     build: ./requirements/wordpress
+  wordpress:
+    image: wordpress
+    container_name: wordpress
+    build: ./requirements/wordpress
+    expose:
+      - 9000
+    env_file:
+      - .env
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      -mariadb
+    networks:
+     - inception
+  nginx:
+    image: nginx
+    container_name: nginx
+    build: ./requirements/nginx
+    ports:
+      - "443:443"
+    env_file:
+     - .env
+    volumes:
+     - wordpress:/var/www/html
+    depends_on:
+      - wordpress
+    networks:
+     - inception
+volumes:
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/mariadb
+      o: bind
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/html
+      o: bind
+networks:
+  inception:
+    name: inception
+    driver: bridge
