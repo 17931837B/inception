@@ -24,16 +24,16 @@ help:
 up:
 	@mkdir -p $(MARIADB_DATA) $(WORDPRESS_DATA)
 	docker compose -f $(COMPOSE_FILE) up -d
-	@echo Preview Link: https://yyamasak.42.fr
-	@echo Preview Admin Panel: https://yyamasak.42.fr/wp-admin
-	@echo Preview Database Panel: https://yyamasak.42.fr/adminer
+	@echo Preview Link: https://tobaba.42.fr
+	@echo Preview Admin Panel: https://tobaba.42.fr/wp-admin
+	@echo Preview Database Panel: https://tobaba.42.fr/adminer
 
 buildup:
 	@mkdir -p $(MARIADB_DATA) $(WORDPRESS_DATA)
 	docker compose -f $(COMPOSE_FILE) up -d --build
-	@echo Preview Link: https://yyamasak.42.fr
-	@echo Preview Admin Panel: https://yyamasak.42.fr/wp-admin
-	@echo Preview Database Panel: https://yyamasak.42.fr/adminer
+	@echo Preview Link: https://tobaba.42.fr
+	@echo Preview Admin Panel: https://tobaba.42.fr/wp-admin
+	@echo Preview Database Panel: https://tobaba.42.fr/adminer
 
 restart:
 	docker compose -f ${COMPOSE_FILE} restart
