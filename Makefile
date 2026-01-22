@@ -7,7 +7,7 @@ DATA_DIR = "$${HOME}/data"
 MARIADB_DATA = $(DATA_DIR)/mariadb
 WORDPRESS_DATA = $(DATA_DIR)/wordpress
 
-.PHONY: up down build clean test logs status help restart
+.PHONY: up down build clean logs status help restart
 
 # Default target
 help:
@@ -16,7 +16,6 @@ help:
 	@echo "  make down     - Stop all containers"
 	@echo "  make build    - Build all containers"
 	@echo "  make clean    - Stop and remove all containers, volumes, and images"
-	@echo "  make test     - Run integration test"
 	@echo "  make logs     - Show container logs"
 	@echo "  make status   - Show container status"
 
@@ -26,15 +25,8 @@ up:
 	docker compose -f $(COMPOSE_FILE) up -d
 	@echo Preview Link: https://tobaba.42.fr
 	@echo Preview Admin Panel: https://tobaba.42.fr/wp-admin
-	@echo Preview Database Panel: https://tobaba.42.fr/adminer
 
-buildup:
-	@mkdir -p $(MARIADB_DATA) $(WORDPRESS_DATA)
-	docker compose -f $(COMPOSE_FILE) up -d --build
-	@echo Preview Link: https://tobaba.42.fr
-	@echo Preview Admin Panel: https://tobaba.42.fr/wp-admin
-	@echo Preview Database Panel: https://tobaba.42.fr/adminer
-
+# Restart
 restart:
 	docker compose -f ${COMPOSE_FILE} restart
 

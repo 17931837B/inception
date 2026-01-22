@@ -17,37 +17,6 @@ services:
     networks:
       - inception_network
 
-  admin:
-    build: 
-      context: ./bonus/adminer
-      dockerfile: Dockerfile
-    container_name: inception_admin
-    image: admin
-    restart: always
-    # ports:
-    #   - "8080:8080"
-    expose:
-      - "8080"
-    depends_on:
-      - db
-    networks:
-      - inception_network
-  cache:
-    build: 
-      context: ./bonus/redis
-      dockerfile: Dockerfile
-    container_name: inception_cache
-    image: cache
-    restart: always
-    # ports:
-    #   - "6379:6379"
-    expose:
-      - "6379"
-    depends_on:
-      - db
-    networks:
-      - inception_network
-
   db:
     build: 
       context: ./mariadb
@@ -61,8 +30,6 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - inception_network
-    # ports:
-    #   - "3306:3306"
     expose:
       - "3306"
 
@@ -73,8 +40,6 @@ services:
     container_name: inception_app
     image: app
     restart: always
-    # ports:
-    #   - "9000:9000"
     expose:
       - "9000"
     volumes:
@@ -83,7 +48,6 @@ services:
       - ".env"
     depends_on:
       - db
-      - cache
     networks:
       - inception_network
 
