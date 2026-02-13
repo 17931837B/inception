@@ -4,7 +4,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     container_name: inception_web
-    image: nginx
+    image: web
     restart: always
     env_file:
       - ".env"
@@ -22,7 +22,7 @@ services:
       context: ./mariadb
       dockerfile: Dockerfile
     container_name: inception_db
-    image: mariadb
+    image: db
     restart: unless-stopped
     env_file:
       - ".env"
@@ -38,7 +38,7 @@ services:
       context: ./wordpress
       dockerfile: Dockerfile
     container_name: inception_app
-    image: wordpress
+    image: app
     restart: always
     expose:
       - "9000"
