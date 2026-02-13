@@ -36,7 +36,7 @@
 
 評価（Defense）で聞かれる可能性が高い技術的なポイントと回答例です。
 
-### 🐳 Docker & Docker Compose
+### Docker & Docker Compose
 
 #### Q: なぜ `restart: unless-stopped` なのか？
 * **回答**: 可用性を高めるためです。MariaDBなどが内部エラーでクラッシュした場合、自動的に再起動させます。
@@ -48,7 +48,7 @@
 
 ---
 
-### 🌐 NGINX (Entrypoint)
+### NGINX (Entrypoint)
 
 * **役割**: リバースプロキシ & SSL終端。
 * **重要な設定**:
@@ -63,7 +63,7 @@
 
 ---
 
-### 📝 WordPress (Application)
+### WordPress (Application)
 
 * **役割**: PHP-FPM (FastCGI Process Manager)。**このコンテナには Apache や NGINX は含まれていません。**
 * **自動構築 (WP-CLI)**:
@@ -76,7 +76,7 @@
 
 ---
 
-### 🗄️ MariaDB (Database)
+### MariaDB (Database)
 
 * **役割**: リレーショナルデータベース。
 * **初期化ロジック**:
