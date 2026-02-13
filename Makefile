@@ -43,7 +43,7 @@ build:
 clean:
 	docker compose -f $(COMPOSE_FILE) down -v --rmi all
 	docker system prune -f
-	rm -rf $(MARIADB_DATA) $(WORDPRESS_DATA)
+	sudo rm -rf $(MARIADB_DATA) $(WORDPRESS_DATA)
 
 # Show logs
 logs:
