@@ -1,28 +1,28 @@
 services:
-  web:
+  nginx:
     build: 
       context: ./nginx
       dockerfile: Dockerfile
-    container_name: inception_web
-    image: web
+    image: nginx
+    container_name: inception_nginx
     restart: always
-    env_file:
-      - ".env"
     ports:
       - "443:443"
     volumes:
       - wp_data:/var/www/html
     depends_on:
-      - app
+      - wordpress
+    env_file:
+      - ".env"
     networks:
       - inception_network
 
-  db:
-    build: 
+  mariadb:
+    build:
       context: ./mariadb
       dockerfile: Dockerfile
-    container_name: inception_db
-    image: db
+    image: mariadb
+    container_name: inception_mariadb
     restart: unless-stopped
     env_file:
       - ".env"
@@ -33,12 +33,12 @@ services:
     expose:
       - "3306"
 
-  app:
-    build: 
+  wordpress:
+    build:
       context: ./wordpress
       dockerfile: Dockerfile
-    container_name: inception_app
-    image: app
+    image: wordpress
+    container_name: inception_wordpress
     restart: always
     expose:
       - "9000"
@@ -47,7 +47,7 @@ services:
     env_file:
       - ".env"
     depends_on:
-      - db
+      - mariadb
     networks:
       - inception_network
 
