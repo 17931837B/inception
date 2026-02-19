@@ -4,7 +4,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     image: nginx
-    container_name: inception_nginx
+    container_name: nginx
     restart: always
     ports:
       - "443:443"
@@ -15,21 +15,21 @@ services:
     env_file:
       - ".env"
     networks:
-      - inception_network
+      - network
 
   mariadb:
     build:
       context: ./mariadb
       dockerfile: Dockerfile
     image: mariadb
-    container_name: inception_mariadb
+    container_name: mariadb
     restart: unless-stopped
     env_file:
       - ".env"
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - inception_network
+      - network
     expose:
       - "3306"
 
@@ -38,7 +38,7 @@ services:
       context: ./wordpress
       dockerfile: Dockerfile
     image: wordpress
-    container_name: inception_wordpress
+    container_name: wordpress
     restart: always
     expose:
       - "9000"
@@ -49,10 +49,10 @@ services:
     depends_on:
       - mariadb
     networks:
-      - inception_network
+      - network
 
 networks:
-  inception_network:
+  network:
     driver: bridge
   
 volumes:
