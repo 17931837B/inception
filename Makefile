@@ -1,58 +1,27 @@
-# Inception Project Makefile
+NAME = inception
+DATA_PATH = /home/tobaba/data
+COMPOSE = docker compose -f ./srcs/docker-compose.yml
 
-# Variables
-SOURCE_DIR = ./srcs
-COMPOSE_FILE = ${SOURCE_DIR}/docker-compose.yml
-DATA_DIR = "$${HOME}/data"
-MARIADB_DATA = $(DATA_DIR)/mariadb
-WORDPRESS_DATA = $(DATA_DIR)/wordpress
+all:
+	@mkdir -p $(DATA_PATH)/mariadb
+	@mkdir -p $(DATA_PATH)/wordpress
+	$(COMPOSE) up -d --build
+	@echo "-------------------------------------------------------"
+	@echo "✅  Inception is ready!"
+	@echo "🌐  Website:     https://tobaba.42.fr"
+	@echo "🔑  Admin Panel: https://tobaba.42.fr/wp-admin"
+	@echo "-------------------------------------------------------"
 
-.PHONY: up down build clean logs status help restart
-
-# Default target
-help:
-	@echo "🚀 Inception Project Commands:"
-	@echo "  make up       - Start all containers"
-	@echo "  make down     - Stop all containers"
-	@echo "  make build    - Build all containers"
-	@echo "  make clean    - Stop and remove all containers, volumes, and images"
-	@echo "  make logs     - Show container logs"
-	@echo "  make status   - Show container status"
-
-# Start all containers
-up:
-	@mkdir -p $(MARIADB_DATA) $(WORDPRESS_DATA)
-	docker compose -f $(COMPOSE_FILE) up -d
-	@echo Preview Link: https://tobaba.42.fr
-	@echo Preview Admin Panel: https://tobaba.42.fr/wp-admin
-
-# Restart
-restart:
-	docker compose -f ${COMPOSE_FILE} restart
-
-# Stop all containers
 down:
-	docker compose -f $(COMPOSE_FILE) down
+	$(COMPOSE) down
 
-# Build and start all containers
-build:
-	@mkdir -p $(MARIADB_DATA) $(WORDPRESS_DATA)
-	docker compose -f $(COMPOSE_FILE) up -d --build
-
-# Clean everything
 clean:
-	docker compose -f $(COMPOSE_FILE) down -v --rmi all
-	docker system prune -f
-	rm -rf $(MARIADB_DATA) $(WORDPRESS_DATA)
+	$(COMPOSE) down -v
 
-# Show logs
-logs:
-	docker compose -f $(COMPOSE_FILE) logs -f
+fclean: clean
+	docker system prune -af
+	sudo rm -rf $(DATA_PATH)
 
-# Show container status
-status:
-	@echo "📊 Container Status:"
-	@docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
-	@echo ""
-	@echo "🌐 Networks:"
-	@docker network ls | grep inception
+re: fclean all
+
+.PHONY: all down clean fclean re

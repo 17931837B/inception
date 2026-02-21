@@ -1,44 +1,44 @@
 services:
-  web:
+  nginx:
     build: 
-      context: ./nginx
+      context: ./requirements/nginx
       dockerfile: Dockerfile
-    container_name: inception_web
-    image: web
+    image: nginx
+    container_name: nginx
     restart: always
-    env_file:
-      - ".env"
     ports:
       - "443:443"
     volumes:
       - wp_data:/var/www/html
     depends_on:
-      - app
+      - wordpress
+    env_file:
+      - ".env"
     networks:
-      - inception_network
+      - network
 
-  db:
-    build: 
-      context: ./mariadb
+  mariadb:
+    build:
+      context: ./requirements/mariadb
       dockerfile: Dockerfile
-    container_name: inception_db
-    image: db
+    image: mariadb
+    container_name: mariadb
     restart: unless-stopped
     env_file:
       - ".env"
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - inception_network
+      - network
     expose:
       - "3306"
 
-  app:
-    build: 
-      context: ./wordpress
+  wordpress:
+    build:
+      context: ./requirements/wordpress
       dockerfile: Dockerfile
-    container_name: inception_app
-    image: app
+    image: wordpress
+    container_name: wordpress
     restart: always
     expose:
       - "9000"
@@ -47,12 +47,12 @@ services:
     env_file:
       - ".env"
     depends_on:
-      - db
+      - mariadb
     networks:
-      - inception_network
+      - network
 
 networks:
-  inception_network:
+  network:
     driver: bridge
   
 volumes:

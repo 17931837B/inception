@@ -14,6 +14,7 @@ if [ ! -f "$WEB_ROOT/wp-config.php" ]; then
   chown -R www-data:www-data "$WEB_ROOT"
 fi
 
+# wp-config.phpの作成とMariaDBとの連携
 if [ ! -f "$WEB_ROOT/wp-config.php" ]; then
   wp config create \
     --allow-root \
@@ -41,4 +42,5 @@ if [ ! -f "$WEB_ROOT/wp-config.php" ]; then
     --role="$USER_AUTH"
 fi
 
+# CMD ["php-fpm8.2", "-F"]これが来る
 exec "$@"
