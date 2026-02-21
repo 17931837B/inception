@@ -32,7 +32,7 @@ The following resources were utilized during the development of this project:
 
 * Official Docker Documentation
 * Official NGINX, WordPress, and MariaDB Documentation
-* **AI Usage**: Generative AI (LLM) was primarily used for analyzing error logs, debugging configuration files (such as NGINX routing and Docker volume mount paths), and assisting with the structuring and translation of the Markdown documentation required for the evaluation. All generated code and configurations were manually reviewed, tested, and fully understood before implementation.
+* **AI Usage**: Generative AI (LLM) was primarily used for analyzing error logs, debugging configuration files (such as NGINX routing and Docker volume mount paths), and assisting with the structuring and translation of the Markdown documentation required for the evaluation. 
 
 ---
 
