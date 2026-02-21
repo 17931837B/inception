@@ -1,104 +1,46 @@
-# 開発者向けドキュメント (DEV_DOC.md)
+# Inception - Developer Documentation
 
-## 1. アーキテクチャ概要 (Architecture Overview)
+This document explains the environment setup, management commands, and data structure for developers and reviewers (evaluators) of the Inception project.
 
-このインフラストラクチャは、カスタムブリッジネットワーク（`inception_network`）上で動作する3つの独立したDockerコンテナで構成されています。
+## 1. Prerequisites
 
+Before setting up the project, ensure that the following environment requirements are met:
 
+* **OS**: Debian-based Linux distribution (or a Docker execution environment such as macOS).
+* **Docker & Docker Compose**: The latest versions must be installed.
+* **Domain Configuration**: To access the local environment, add the following routing to the `/etc/hosts` file on your host machine:
+  `127.0.0.1 tobaba.42.fr`
 
-### データフロー (Data Flow)
-1.  **クライアント (Browser)**: `https://<USER_LOGIN>.42.fr` (ポート 443) へリクエストを送信。
-2.  **NGINX コンテナ**: SSL/TLS 終端を行い、リクエストの内容を検査。
-    * **静的ファイル**: 共有ボリューム（`wp_data`）から直接配信。
-    * **PHPファイル**: **FastCGI** プロトコル経由で、内部ネットワークの **WordPress** コンテナ (ポート 9000) へ転送。
-3.  **WordPress コンテナ**: PHPスクリプトを実行。データベース操作が必要な場合、**MariaDB** コンテナ (ポート 3306) へ接続。
-4.  **MariaDB コンテナ**: SQLクエリを処理し、結果を返す。
+## 2. Setup
 
----
+Follow these steps to configure environment variables and start the containers:
 
-## 2. 開発・ビルド環境 (Build & Environment)
+1. Create a `.env` file inside the `srcs` folder located in the root directory of the repository.
+2. Define the necessary environment variables in the `.env` file, such as database passwords and WordPress administrator information (this file is not committed to the Git repository for security reasons).
+3. Run the `make` or `make all` command in the root directory.
 
-### 前提条件
-* Make
-* `/etc/hosts` に `127.0.0.1 tobaba.42.fr` が設定されていること。
+## 3. Makefile Usage
 
-### コマンド (Makefile)
-開発時に頻繁に使用するコマンド：
+Manage the container lifecycle using the `Makefile` located in the root directory.
 
-* `make up`: イメージのビルドとコンテナの起動（バックグラウンド）。
-* `make down`: コンテナとネットワークの停止・削除。
-* `make logs`: 全コンテナのリアルタイムログを表示（デバッグ用）。
-* `make clean`: **全データ削除**。コンテナ、ネットワーク、イメージ、およびホスト側の永続化データ（ボリューム）を消去し、初期状態に戻す。
+* **`make` / `make all`**: Automatically creates directories on the host machine for data persistence (`/home/tobaba/data/mariadb` and `/home/tobaba/data/wordpress`). It then builds images using `docker compose` and starts the containers in the background (detached mode).
+* **`make down`**: Safely stops and removes running containers and created networks. Data volumes are preserved.
+* **`make clean`**: In addition to the `make down` process, this command also removes data volumes within Docker.
+* **`make fclean`**: A powerful command to completely reset the environment. It runs `make clean`, followed by `docker system prune -af` to remove all unused images and caches. Furthermore, it physically deletes the host machine's data storage directory (`/home/tobaba/data`) using `sudo rm -rf`. *Warning: Use with caution as all data will be permanently deleted.*
+* **`make re`**: Executes `make fclean` to completely clear the environment, then runs `make all` to rebuild and start from a clean state.
 
----
+## 4. Useful Commands
 
-## 3. 技術詳細と評価対策 (Technical Details & Defense Points)
+Here is a useful command for development and debugging:
 
-評価（Defense）で聞かれる可能性が高い技術的なポイントと回答例です。
+* **Check container status**: 
+  `cd srcs && docker compose ps`
 
-### Docker & Docker Compose
+## 5. Data Persistence
 
-#### Q: なぜ `restart: unless-stopped` なのか？
-* **回答**: 可用性を高めるためです。MariaDBなどが内部エラーでクラッシュした場合、自動的に再起動させます。
-* **always との違い**: `unless-stopped` は、ユーザーが明示的に `docker stop` コマンドで止めた場合（メンテナンス時など）は、PC再起動後も「停止したまま」になります。`always` だとメンテナンス中でも勝手に立ち上がってしまうリスクがあります。
+In this project, data is persisted using Bind Mounts to the host machine, ensuring that no data is lost even if containers are restarted or destroyed. The actual data is stored in the following paths on the host machine:
 
-#### Q: PID 1 問題 (なぜ `daemon off;` が必要なのか)
-* **回答**: Docker コンテナは「メインプロセス (PID 1) が終了すると、コンテナ自体も停止する」という仕様があるからです。
-* **詳細**: NGINX や PHP-FPM はデフォルトでデーモン（バックグラウンド）として動作しようとしますが、そうすると PID 1 が即座に終了扱いになり、コンテナが落ちてしまいます。これを防ぐためにフォアグラウンドで実行させています。
+* **Database (MariaDB) data**: `/home/tobaba/data/mariadb` (Synchronized with `/var/lib/mysql` inside the container).
+* **Website (WordPress) data**: `/home/tobaba/data/wordpress` (Synchronized with `/var/www/html` inside the container).
 
----
-
-### NGINX (Entrypoint)
-
-* **役割**: リバースプロキシ & SSL終端。
-* **重要な設定**:
-    ```nginx
-    location ~ \.php$ {
-        fastcgi_pass app:9000;  # WordPressコンテナへ転送
-    }
-    ```
-* **評価ポイント**:
-    * **TLS v1.2/v1.3 Only**: `ssl_protocols` ディレクティブで、脆弱性のある古いプロトコル（SSLv3, TLSv1.0/1.1）を拒否しています。
-    * **Port 80 無効化**: HTTP（非暗号化通信）を受け付けないことで、厳格なセキュリティ要件を満たしています。
-
----
-
-### WordPress (Application)
-
-* **役割**: PHP-FPM (FastCGI Process Manager)。**このコンテナには Apache や NGINX は含まれていません。**
-* **自動構築 (WP-CLI)**:
-    手動インストールではなく、`init-wp.sh` スクリプト内で `wp-cli` ツールを使用しています。
-    1.  WordPress コアファイルのダウンロード。
-    2.  環境変数に基づいた `wp-config.php` の生成。
-    3.  管理者ユーザーと一般ユーザーの作成。
-* **評価ポイント**:
-    * **なぜポート 9000？**: PHP-FPM が FastCGI リクエストを受け付ける標準ポートだからです。このポートはホストマシンには公開せず（`ports` なし）、内部ネットワークのみに公開（`expose`）しています。
-
----
-
-### MariaDB (Database)
-
-* **役割**: リレーショナルデータベース。
-* **初期化ロジック**:
-    `init-mariadb.sh` スクリプトにて、データディレクトリ（`/var/lib/mysql/mysql`）の存在を確認します。
-    * **存在しない場合**: `mysql_install_db` を実行して初期化し、ユーザー作成と権限付与を行います。
-    * **存在する場合**: 既存データを保持するため、初期化処理をスキップします。
-* **評価ポイント**:
-    * **セキュリティ**: `docker-compose.yml` で `ports` を使用していません。これにより、外部（ホスト側）からの直接アクセスを遮断し、WordPress からのみアクセス可能な状態にしています。
-
----
-
-## 4. データの永続化 (Data Persistence)
-
-課題の要件である「Bind Mount (`-v host:container`) の禁止」と「ホストの特定パス (`/home/user/data`) への保存」という矛盾するルールを両立させるため、**Docker Named Volumes with Driver Options** を採用しています。
-
-### 設定内容 (docker-compose.yml)
-
-```yaml
-volumes:
-  mariadb_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/<USER_LOGIN>/data/mariadb  # ホスト側の物理パス
+Because of this setup, existing post data and account settings will be fully restored upon the next startup, even after a VM reboot or running `make down`.
