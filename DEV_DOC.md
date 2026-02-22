@@ -38,7 +38,7 @@ Here is a useful command for development and debugging:
 
 ## 5. Data Persistence
 
-In this project, data is persisted using Bind Mounts to the host machine, ensuring that no data is lost even if containers are restarted or destroyed. The actual data is stored in the following paths on the host machine:
+In this project, data is persisted using Docker Named Volumes (configured with local driver binding to the host machine) to the host machine, ensuring that no data is lost even if containers are restarted or destroyed. The actual data is stored in the following paths on the host machine:
 
 * **Database (MariaDB) data**: `/home/tobaba/data/mariadb` (Synchronized with `/var/lib/mysql` inside the container).
 * **Website (WordPress) data**: `/home/tobaba/data/wordpress` (Synchronized with `/var/www/html` inside the container).

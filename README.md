@@ -1,4 +1,4 @@
-*This project was created as part of the 42 curriculum by tobaba.*
+*This project has been created as part of the 42 curriculum by tobaba.*
 
 ## 1. Description
 
@@ -20,7 +20,7 @@ For detailed usage, technical design, and setup procedures, please refer to the 
     * Environment setup guide for developers and reviewers.
     * Prerequisites (e.g., `/etc/hosts` configuration) and setup steps.
     * Details of Makefile commands (`make all`, `make fclean`, etc.).
-    * Mechanics of data persistence (Bind Mounts).
+    * Mechanics of data persistence (Docker Named Volumes).
 
 **[Quick Start]**
 To launch the project, run the following command in the root directory of the repository:

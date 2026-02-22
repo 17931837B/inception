@@ -8,7 +8,13 @@ This system consists of three independent containers built using Docker Compose:
 * **WordPress + php-fpm**: An application server that processes and generates site content.
 * **MariaDB**: A relational database that securely stores WordPress data.
 
-## 2. Accessing the Site and Admin Panel
+## 2. Starting and Stopping the Project
+To start or stop the containers of this system, run the following commands in the root directory of the repository:
+
+* **Start the project**: Run `make all` (or `make`). The system will build and start in the background.
+* **Stop the project**: Run `make down`. This will safely stop the system while preserving saved data (database and site files).
+
+## 3. Accessing the Site and Admin Panel
 You can use the system by accessing the following URLs from your web browser:
 
 * **Website (Public Page)**: `https://tobaba.42.fr`
@@ -16,8 +22,8 @@ You can use the system by accessing the following URLs from your web browser:
 
 *Note: Because this system uses a self-signed certificate, your browser may display a security warning upon your first visit. This is the expected behavior in a safe local environment, so please bypass the warning to continue accessing the site.*
 
-## 3. Credential Management
-The system is initially configured with the following two accounts. Authentication information, such as passwords, is managed securely in the `.env` file.
+## 4. Credential Management
+The system is initially configured with the following two accounts. Authentication information, such as passwords, is managed securely via environment variables (in the `.env` file).
 
 * **Administrator Account**: Has privileges to manage overall site settings and edit pages (due to security requirements, the username does not contain "admin").
 * **Regular User Account**: An account with restricted privileges, capable of actions such as posting comments on articles.
@@ -27,7 +33,7 @@ The system is initially configured with the following two accounts. Authenticati
 2. Open "Users" > "Profile" from the left menu.
 3. In the "Account Management" section at the bottom of the screen, click "Set New Password", change it to a password of your choice, and click "Update Profile".
 
-## 4. Basic Checks
+## 5. Basic Checks
 To ensure the system is operating correctly, please perform the following tests regularly:
 
 * **HTTP Access Blocked**: Access `http://tobaba.42.fr` (port 80) and confirm that the connection is refused.
